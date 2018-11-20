@@ -19,6 +19,12 @@ def pong(request):
     return aiohttp_jinja2.render_template('405.html', request, {})
 
 
+def data(request):
+    with open(DATA_PATH) as d:
+        data = d.read()
+    return web.Response(text=data)
+
+
 def parse_data():
     result = []
     with open(DATA_PATH) as d:
@@ -46,6 +52,7 @@ def main(argv):
     app = web.Application()
     app.add_routes([web.get('/', stats)])
     app.add_routes([web.get('/pong', pong)])
+    app.add_routes([web.get('/data', data)])
     aiohttp_jinja2.setup(app, loader=jinja2.PackageLoader('c3queue', 'templates'))
     get_data_path()
     return app
