@@ -74,6 +74,7 @@ async def main(argv):
     app.add_routes([web.get('/', stats)])
     app.add_routes([web.post('/pong', pong)])
     app.add_routes([web.get('/data', data)])
+    app.add_routes([web.static('/static', os.path.join(os.path.dirname(__file__), 'static'))])
     aiohttp_jinja2.setup(app, loader=jinja2.PackageLoader('c3queue', 'templates'))
     await get_data_path()
     return app
