@@ -1,5 +1,6 @@
 import csv
 import os
+from collections import defaultdict
 
 import aiohttp_jinja2
 import aiofiles
@@ -13,19 +14,29 @@ DATA_PATH = ''
 C3SECRET = os.environ.get('C3QUEUE_SECRET')
 
 
+def structure_data(data):
+    result = defaultdict(lambda: defaultdict(list))
+    for entry in data:
+        entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
+        ping = entry['ping']
+        result[ping.year][ping.day].append(entry)
+    return result
+
+
 @aiohttp_jinja2.template('stats.html')
 async def stats(request):
     data = await parse_data()
-    max_duration = 0
-    first_ping = data[0]['ping']
-    for d in data:
-        d['duration'] = round((d['pong'] - d['ping']).seconds / 60, 1)
-    day_one_data = [d for d in data if d['ping'].day == 26]
-    line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Waiting Time', height=300)
-    line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in day_one_data])
-    line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
-    line_chart.add('Waiting time', [d['duration'] for d in day_one_data])
-    return {'chart': line_chart.render(is_unicode=True)}
+    data = structure_data(data)
+    charts = []
+    for year in list(data.keys())[::-1]:
+        for number, day in data[year].items():
+            first_ping = day[0]['ping']
+            line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}, {}'.format(number - 26, year), height=300)
+            line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in day])
+            line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
+            line_chart.add('Waiting time', [d['duration'] for d in day])
+            charts.append(line_chart.render(is_unicode=True))
+    return {'charts': charts}
 
 
 async def pong(request):
