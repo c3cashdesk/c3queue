@@ -4,6 +4,7 @@ import os
 import aiohttp_jinja2
 import aiofiles
 import jinja2
+import pygal
 from aiohttp import web
 from dateutil import parser
 
@@ -15,7 +16,16 @@ C3SECRET = os.environ.get('C3QUEUE_SECRET')
 @aiohttp_jinja2.template('stats.html')
 async def stats(request):
     data = await parse_data()
-    return {'data': data}
+    max_duration = 0
+    first_ping = data[0]['ping']
+    for d in data:
+        d['duration'] = round((d['pong'] - d['ping']).seconds / 60, 1)
+    day_one_data = [d for d in data if d['ping'].day == 26]
+    line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Waiting Time', height=300)
+    line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in day_one_data])
+    line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
+    line_chart.add('Waiting time', [d['duration'] for d in day_one_data])
+    return {'chart': line_chart.render(is_unicode=True)}
 
 
 async def pong(request):
