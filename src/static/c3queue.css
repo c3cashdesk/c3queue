@@ -13,12 +13,12 @@ header img {
 main #explanation {
     font-family: Montserrat, sans-serif;
     font-weight: bold;
-    font-size: 23px;
+    font-size: 20px;
     text-transform: uppercase;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 500px;
+    max-width: 700px;
     padding: 16px;
 }
 main #explanation .inner {
@@ -34,9 +34,6 @@ main #explanation .inner {
     position:relative;
     display:inline-block; /*required*/
 }
-svg {
-
-}
 #c3q svg .graph, #c3q svg .title, #c3q svg .guides, #c3q svg  .vertical .axis.always_show .guide.line, #c3q svg .plot > .background {
     fill: white;
     stroke: #4a5354;
@@ -51,4 +48,13 @@ svg {
     /* todo: 00A357 */
     fill: #0084B0;
     stroke: #0084B0;
+}
+#c3q svg .tooltip text.x_label {
+    fill: rgba(0,0,0,.54);
+    font-size: .8em;
+}
+#c3q svg .tooltip text.legend, #c3q svg .tooltip text.x_label, #c3q svg .tooltip text.value {
+    font-size: 10px !important;
+}
+#c3q svg .tooltip .tooltip-box {
 }
