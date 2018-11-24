@@ -1,5 +1,6 @@
 body {
     background: black;
+    color: white;
 }
 a {
     border: 2px solid #00A357;
@@ -32,4 +33,22 @@ main #explanation .inner {
     -webkit-text-fill-color: transparent;
     position:relative;
     display:inline-block; /*required*/
+}
+svg {
+
+}
+#c3q svg .graph, #c3q svg .title, #c3q svg .guides, #c3q svg  .vertical .axis.always_show .guide.line, #c3q svg .plot > .background {
+    fill: white;
+    stroke: #4a5354;
+}
+#c3q svg .graph > .background, #c3q svg .plot > .background {
+    fill: black;
+}
+#c3q svg .graph > .background {
+    stroke: black;
+}
+#c3q svg .color-0 {
+    /* todo: 00A357 */
+    fill: #0084B0;
+    stroke: #0084B0;
 }
