@@ -34,34 +34,9 @@ main #explanation .inner {
     position:relative;
     display:inline-block; /*required*/
 }
-#c3q svg .graph,
-#c3q svg .title,
-#c3q svg .guides,
-#c3q svg .axis .guides text,
-#c3q svg .axis .guides:hover text,
-#c3q svg .axis.y .guides:hover .guide.line,
-#c3q svg .vertical .axis.always_show .guide.line,
-#c3q svg .plot > .background {
-    fill: white;
-    stroke: #4a5354;
-}
-#c3q svg .graph > .background, #c3q svg .plot > .background {
-    fill: black;
-}
-#c3q svg .graph > .background {
-    stroke: black;
-}
-#c3q svg .color-0 {
-    /* todo: 00A357 */
-    fill: #0084B0;
-    stroke: #0084B0;
-}
 #c3q svg .tooltip text.x_label {
-    fill: rgba(0,0,0,.54);
     font-size: .8em;
 }
 #c3q svg .tooltip text.legend, #c3q svg .tooltip text.x_label, #c3q svg .tooltip text.value {
     font-size: 10px !important;
-}
-#c3q svg .tooltip .tooltip-box {
 }

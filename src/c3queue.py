@@ -13,6 +13,9 @@ from dateutil import parser
 DATA_PATH = ''
 C3SECRET = os.environ.get('C3QUEUE_SECRET')
 
+CONGRESS_STYLE = pygal.style.DarkStyle
+CONGRESS_STYLE.colors = (['#0084B0', '#00A357'])
+
 
 def structure_data(data):
     result = defaultdict(lambda: defaultdict(list))
