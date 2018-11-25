@@ -69,7 +69,7 @@ async def stats(request):
                 if not pings:
                     value_keys.remove(year)
 
-        line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}'.format(day_number - 26), height=300, style=CONGRESS_STYLE)
+        line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', title='Day {}'.format(day_number - 26), height=300, style=CONGRESS_STYLE)
         line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), all_x_values)
         line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
         for year, year_data in full_values.items():
