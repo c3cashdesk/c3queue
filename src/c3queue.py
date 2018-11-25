@@ -45,10 +45,6 @@ async def stats(request):
     data = structure_data(data)
     charts = []
     for day_number, values in data.items():
-        all_x_values = sorted(
-            list(set([y['ping'] for year in values for y in values[year]]))
-        )
-        all_x_values = []
         full_values = {year: [] for year in values}
         value_keys = list(values.keys())
         while True:
@@ -58,7 +54,6 @@ async def stats(request):
                 value_keys, key=lambda x: values[x][0]['ping'] if values[x] else LATEST
             )
             next_ping = values[next_entry][0]['ping']
-            all_x_values.append(next_ping)
             for year in value_keys:
                 pings = values[year]
                 if not pings:
@@ -66,7 +61,7 @@ async def stats(request):
                 if pings[0]['ping'] == next_ping:
                     full_values[year].append(pings.pop(0))
                 else:
-                    full_values[year].append({'duration': None})
+                    full_values[year].append({'ping': next_ping, 'duration': None})
                 if not pings:
                     value_keys.remove(year)
 
@@ -81,7 +76,7 @@ async def stats(request):
         line_chart.y_value_formatter = lambda x: '{} minutes'.format(x)
         line_chart.x_value_formatter = lambda x: x.strftime('%H:%M')
         for year, year_data in full_values.items():
-            line_chart.add(year, [(x, d['duration']) for x, d in zip(all_x_values, year_data)])
+            line_chart.add(year, [(d['ping'], d['duration']) for d in year_data])
         charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts}
 
@@ -131,7 +126,6 @@ async def parse_data():
                 {
                     'ping': ping,
                     'pong': pong,
-                    'rtt': (pong - ping) if (ping and pong) else None,
                 }
             )
     return result
