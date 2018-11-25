@@ -17,11 +17,12 @@ C3SECRET = os.environ.get('C3QUEUE_SECRET')
 LATEST = datetime.time(23, 59, 59)
 
 CONGRESS_STYLE = pygal.style.DarkStyle
-CONGRESS_STYLE.colors = ([
+CONGRESS_STYLE.colors = [
     '#01a89e',  # 33C3
     '#a10632',  # 34C3
-    '#0084B0', '#00A357'  # 35C3
-])
+    '#0084B0',
+    '#00A357',  # 35C3
+]
 
 
 def truncate_time(t):
@@ -48,14 +49,18 @@ async def stats(request):
     charts = []
     for day_number, values in data.items():
         first_ping = values.pop('first_ping')
-        all_x_values = sorted(list(set([y['ping'] for year in values for y in values[year]])))
+        all_x_values = sorted(
+            list(set([y['ping'] for year in values for y in values[year]]))
+        )
         all_x_values = []
         full_values = {year: [] for year in values}
         value_keys = list(values.keys())
         while True:
             if not value_keys:
                 break
-            next_entry = min(value_keys, key=lambda x: values[x][0]['ping'] if values[x] else LATEST)
+            next_entry = min(
+                value_keys, key=lambda x: values[x][0]['ping'] if values[x] else LATEST
+            )
             next_ping = values[next_entry][0]['ping']
             all_x_values.append(next_ping)
             for year in value_keys:
@@ -69,9 +74,15 @@ async def stats(request):
                 if not pings:
                     value_keys.remove(year)
 
-        line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', title='Day {}'.format(day_number - 26), height=300, style=CONGRESS_STYLE)
+        line_chart = pygal.Line(
+            x_label_rotation=40,
+            interpolate='cubic',
+            title='Day {}'.format(day_number - 26),
+            height=300,
+            style=CONGRESS_STYLE,
+        )
         line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), all_x_values)
-        line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
+        line_chart.value_formatter = lambda x: '{} minutes'.format(x)
         for year, year_data in full_values.items():
             line_chart.add(year, [d['duration'] for d in year_data])
         charts.append(line_chart.render(is_unicode=True))
@@ -79,7 +90,10 @@ async def stats(request):
 
 
 async def pong(request):
-    if not 'Authorization' in request.headers or request.headers['Authorization'] != C3SECRET:
+    if (
+        not 'Authorization' in request.headers
+        or request.headers['Authorization'] != C3SECRET
+    ):
         return aiohttp_jinja2.render_template('405.html', request, {})
     try:
         data = await request.post()
@@ -116,7 +130,13 @@ async def parse_data():
             ping, pong = row.split(',')
             ping = parser.parse(ping.strip('"'))
             pong = parser.parse(pong.strip('"'))
-            result.append({'ping': ping, 'pong': pong, 'rtt': (pong - ping) if (ping and pong) else None})
+            result.append(
+                {
+                    'ping': ping,
+                    'pong': pong,
+                    'rtt': (pong - ping) if (ping and pong) else None,
+                }
+            )
     return result
 
 
@@ -129,7 +149,9 @@ async def write_line(ping, pong):
 
 async def get_data_path():
     global DATA_PATH
-    DATA_PATH = os.environ.get('C3QUEUE_DATA', os.path.join(os.path.dirname(__file__), 'c3queue.csv'))
+    DATA_PATH = os.environ.get(
+        'C3QUEUE_DATA', os.path.join(os.path.dirname(__file__), 'c3queue.csv')
+    )
     if not os.path.exists(DATA_PATH):
         try:
             with aiofiles.open(DATA_PATH, 'w') as d:
@@ -143,7 +165,9 @@ async def main(argv=None):
     app.add_routes([web.get('/', stats)])
     app.add_routes([web.post('/pong', pong)])
     app.add_routes([web.get('/data', data)])
-    app.add_routes([web.static('/static', os.path.join(os.path.dirname(__file__), 'static'))])
+    app.add_routes(
+        [web.static('/static', os.path.join(os.path.dirname(__file__), 'static'))]
+    )
     aiohttp_jinja2.setup(app, loader=jinja2.PackageLoader('c3queue', 'templates'))
     await get_data_path()
     return app
