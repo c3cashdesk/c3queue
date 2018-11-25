@@ -36,9 +36,6 @@ def structure_data(data):
         entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
         entry['ping'] = truncate_time(entry['ping'].time())
         result[ping.day]['{}C3'.format(ping.year - 1983)].append(entry)
-        first_ping = result[ping.day]['first_ping']
-        if not first_ping or first_ping > entry['ping']:
-            result[ping.day]['first_ping'] = entry['ping']
     return result
 
 
@@ -48,7 +45,6 @@ async def stats(request):
     data = structure_data(data)
     charts = []
     for day_number, values in data.items():
-        first_ping = values.pop('first_ping')
         all_x_values = sorted(
             list(set([y['ping'] for year in values for y in values[year]]))
         )
