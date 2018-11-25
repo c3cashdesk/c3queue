@@ -29,7 +29,7 @@ async def stats(request):
     data = structure_data(data)
     charts = []
     for year in list(data.keys())[::-1]:
-        for number, day in data[year].items():
+        for number, day in data[year].items():  # TODO: combine day 1 of all years, etc
             first_ping = day[0]['ping']
             line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}, {}'.format(number - 26, year), height=300)
             line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in day])
