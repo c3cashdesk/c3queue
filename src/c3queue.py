@@ -62,7 +62,7 @@ async def stats(request):
     data = await parse_data()
     data, last_ping = structure_data(data)
     charts = []
-    for day_number, values in data.items():
+    for day_number in sorted(list(data)):
         line_chart = pygal.TimeLine(
             x_label_rotation=40,
             interpolate='cubic',
@@ -73,8 +73,9 @@ async def stats(request):
         )
         line_chart.y_value_formatter = lambda x: '{} minutes'.format(x)
         line_chart.x_value_formatter = lambda x: x.strftime('%H:%M')
-        for year, year_data in values.items():
-            line_chart.add(year, [(d['ping'], d['duration']) for d in year_data])
+        values = data[day_number]
+        for year in sorted(list(values)):
+            line_chart.add(year, [(d['ping'], d['duration']) for d in values[year]])
         charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts, 'last_ping': last_ping}
 
