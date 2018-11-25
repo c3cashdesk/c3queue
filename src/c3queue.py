@@ -14,7 +14,11 @@ DATA_PATH = ''
 C3SECRET = os.environ.get('C3QUEUE_SECRET')
 
 CONGRESS_STYLE = pygal.style.DarkStyle
-CONGRESS_STYLE.colors = (['#0084B0', '#00A357'])
+CONGRESS_STYLE.colors = ([
+    '#01a89e',  # 33C3
+    '#a10632',  # 34C3
+    '#0084B0', '#00A357'  # 35C3
+])
 
 
 def structure_data(data):
