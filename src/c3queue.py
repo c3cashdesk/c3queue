@@ -59,6 +59,8 @@ async def pong(request):
 
 
 async def data(request):
+    if not DATA_PATH:
+        return
     async with aiofiles.open(DATA_PATH) as d:
         data = await d.read()
     return web.Response(text=data)
@@ -66,6 +68,8 @@ async def data(request):
 
 async def parse_data():
     result = []
+    if not DATA_PATH:
+        return result
     async with aiofiles.open(DATA_PATH) as d:
         async for row in d:
             if row.strip() == 'ping,pong':
@@ -78,6 +82,8 @@ async def parse_data():
 
 
 async def write_line(ping, pong):
+    if not DATA_PATH:
+        return
     async with aiofiles.open(DATA_PATH, 'a') as d:
         await d.write('{},{}\n'.format(ping.isoformat(), pong.isoformat()))
 
@@ -86,8 +92,11 @@ async def get_data_path():
     global DATA_PATH
     DATA_PATH = os.environ.get('C3QUEUE_DATA', os.path.join(os.path.dirname(__file__), 'c3queue.csv'))
     if not os.path.exists(DATA_PATH):
-        with aiofiles.open(DATA_PATH, 'w') as d:
-            d.write('ping,pong\n')
+        try:
+            with aiofiles.open(DATA_PATH, 'w') as d:
+                d.write('ping,pong\n')
+        except Exception as e:
+            print(str(e))
 
 
 async def main(argv=None):
