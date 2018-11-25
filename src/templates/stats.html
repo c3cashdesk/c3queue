@@ -17,15 +17,18 @@
     <main>
         <div id="explanation">
             <div class="inner">
-                This is how long the queue at the entrance of 34C3 took on Day 0 and Day 1.<br>
-                This graph will be updated live during Day 0 and Day 1.<br>
-                You can download the <a href="/data">raw data</a> here.
+                Last known waiting time: {{ last_ping.duration }} minutes on Day {{ last_ping.day - 26 }}, {{ last_ping.pong.hour }}:{{ last_ping.pong.minute }} ({{ last_ping.year - 1983 }}C3).
             </div>
         </div>
         <div id="c3q">
             {% for chart in charts %}
                 {{ chart|safe }}
             {% endfor %}
+        </div>
+        <div id="explanation">
+            <div class="inner">
+                You can download the <a href="/data">raw data</a> here.
+            </div>
         </div>
     </main>
 </body>

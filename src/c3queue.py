@@ -52,13 +52,15 @@ def structure_data(data):
             result[ping.day][key][-1] = merge_pings(result[ping.day][key][-1], entry)
         else:
             result[ping.day][key].append(entry)
-    return result
+    entry['year'] = ping.year
+    entry['day'] = ping.day
+    return result, entry
 
 
 @aiohttp_jinja2.template('stats.html')
 async def stats(request):
     data = await parse_data()
-    data = structure_data(data)
+    data, last_ping = structure_data(data)
     charts = []
     for day_number, values in data.items():
         line_chart = pygal.TimeLine(
@@ -74,7 +76,7 @@ async def stats(request):
         for year, year_data in values.items():
             line_chart.add(year, [(d['ping'], d['duration']) for d in year_data])
         charts.append(line_chart.render(is_unicode=True))
-    return {'charts': charts}
+    return {'charts': charts, 'last_ping': last_ping}
 
 
 async def pong(request):

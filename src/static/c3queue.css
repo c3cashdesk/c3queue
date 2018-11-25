@@ -15,6 +15,7 @@ main #explanation {
     font-weight: bold;
     font-size: 20px;
     text-transform: uppercase;
+    text-align: center;
     display: block;
     margin-left: auto;
     margin-right: auto;
