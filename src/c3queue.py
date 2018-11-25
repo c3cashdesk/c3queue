@@ -21,12 +21,21 @@ CONGRESS_STYLE.colors = ([
 ])
 
 
+def truncate_time(t):
+    return t.replace(second=0, microsecond=0)
+
+
 def structure_data(data):
     result = defaultdict(lambda: defaultdict(list))
     for entry in data:
         entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
-        ping = entry['ping']
-        result[ping.day][ping.year].append(entry)
+        ping = entry['ping'].date()
+        entry['ping'] = truncate_time(entry['ping'].time())
+        entry['pong'] = truncate_time(entry['pong'].time())
+        result[ping.day]['{}C3'.format(ping.year - 1983)].append(entry)
+        first_ping = result[ping.day]['first_ping']
+        if not first_ping or first_ping > entry['ping']:
+            result[ping.day]['first_ping'] = entry['ping']
     return result
 
 
