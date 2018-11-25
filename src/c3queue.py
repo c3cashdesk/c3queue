@@ -29,13 +29,29 @@ def truncate_time(t):
     return t.replace(second=0, microsecond=0)
 
 
+def merge_pings(ping1, ping2):
+    ping1['pong'] = None
+    previous_merges = ping1.get('contains', 1)
+    ping1['duration'] = ((ping1['duration'] * previous_merges) + ping2['duration']) / (
+        previous_merges + 1
+    )
+    ping1['contains'] = previous_merges + 1
+    return ping1
+
+
 def structure_data(data):
     result = defaultdict(lambda: defaultdict(list))
     for entry in data:
         ping = entry['ping'].date()
         entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
-        entry['ping'] = truncate_time(entry['ping'].time())
-        result[ping.day]['{}C3'.format(ping.year - 1983)].append(entry)
+        entry['ping'] = datetime.time(
+            hour=entry['ping'].hour, minute=(entry['ping'].minute // 5) * 5
+        )
+        key = '{}C3'.format(ping.year - 1983)
+        if result[ping.day][key] and result[ping.day][key][-1]['ping'] == entry['ping']:
+            result[ping.day][key][-1] = merge_pings(result[ping.day][key][-1], entry)
+        else:
+            result[ping.day][key].append(entry)
     return result
 
 
@@ -122,12 +138,7 @@ async def parse_data():
             ping, pong = row.split(',')
             ping = parser.parse(ping.strip('"'))
             pong = parser.parse(pong.strip('"'))
-            result.append(
-                {
-                    'ping': ping,
-                    'pong': pong,
-                }
-            )
+            result.append({'ping': ping, 'pong': pong})
     return result
 
 
