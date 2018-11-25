@@ -1,4 +1,6 @@
 import csv
+import datetime
+import operator
 import os
 from collections import defaultdict
 
@@ -12,6 +14,7 @@ from dateutil import parser
 
 DATA_PATH = ''
 C3SECRET = os.environ.get('C3QUEUE_SECRET')
+LATEST = datetime.time(23, 59, 59)
 
 CONGRESS_STYLE = pygal.style.DarkStyle
 CONGRESS_STYLE.colors = ([
@@ -28,10 +31,9 @@ def truncate_time(t):
 def structure_data(data):
     result = defaultdict(lambda: defaultdict(list))
     for entry in data:
-        entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
         ping = entry['ping'].date()
+        entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
         entry['ping'] = truncate_time(entry['ping'].time())
-        entry['pong'] = truncate_time(entry['pong'].time())
         result[ping.day]['{}C3'.format(ping.year - 1983)].append(entry)
         first_ping = result[ping.day]['first_ping']
         if not first_ping or first_ping > entry['ping']:
@@ -44,14 +46,35 @@ async def stats(request):
     data = await parse_data()
     data = structure_data(data)
     charts = []
-    for number, year_values in data.items():
-        for year, year_data in year_values.items():  # TODO: combine day 1 of all years, etc
-            first_ping = year_data[0]['ping']
-            line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}, {}'.format(number - 26, year), height=300, style=CONGRESS_STYLE)
-            line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in year_data])
-            line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
-            line_chart.add('Waiting time', [d['duration'] for d in year_data])
-            charts.append(line_chart.render(is_unicode=True))
+    for day_number, values in data.items():
+        first_ping = values.pop('first_ping')
+        all_x_values = sorted(list(set([y['ping'] for year in values for y in values[year]])))
+        all_x_values = []
+        full_values = {year: [] for year in values}
+        value_keys = list(values.keys())
+        while True:
+            if not value_keys:
+                break
+            next_entry = min(value_keys, key=lambda x: values[x][0]['ping'] if values[x] else LATEST)
+            next_ping = values[next_entry][0]['ping']
+            all_x_values.append(next_ping)
+            for year in value_keys:
+                pings = values[year]
+                if not pings:
+                    continue
+                if pings[0]['ping'] == next_ping:
+                    full_values[year].append(pings.pop(0))
+                else:
+                    full_values[year].append({'duration': None})
+                if not pings:
+                    value_keys.remove(year)
+
+        line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}'.format(day_number - 26), height=300, style=CONGRESS_STYLE)
+        line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), all_x_values)
+        line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
+        for year, year_data in full_values.items():
+            line_chart.add(year, [d['duration'] for d in year_data])
+        charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts}
 
 
