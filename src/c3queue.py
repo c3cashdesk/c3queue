@@ -32,8 +32,10 @@ def truncate_time(t):
 def merge_pings(ping1, ping2):
     ping1['pong'] = None
     previous_merges = ping1.get('contains', 1)
-    ping1['duration'] = ((ping1['duration'] * previous_merges) + ping2['duration']) / (
-        previous_merges + 1
+    ping1['duration'] = round(
+        ((ping1['duration'] * previous_merges) + ping2['duration'])
+        / (previous_merges + 1),
+        1,
     )
     ping1['contains'] = previous_merges + 1
     return ping1
@@ -71,7 +73,7 @@ async def stats(request):
             style=CONGRESS_STYLE,
             js=['/static/pygal-tooltips.min.js'],
         )
-        line_chart.y_value_formatter = lambda x: '{} minutes'.format(x)
+        line_chart.value_formatter = lambda x: '{} minutes'.format(x)
         line_chart.x_value_formatter = lambda x: x.strftime('%H:%M')
         values = data[day_number]
         for year in sorted(list(values)):
