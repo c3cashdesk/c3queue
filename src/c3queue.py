@@ -74,7 +74,7 @@ async def stats(request):
                 if not pings:
                     value_keys.remove(year)
 
-        line_chart = pygal.Line(
+        line_chart = pygal.TimeLine(
             x_label_rotation=40,
             interpolate='cubic',
             title='Day {}'.format(day_number - 26),
@@ -82,10 +82,10 @@ async def stats(request):
             style=CONGRESS_STYLE,
             js=['/static/pygal-tooltips.min.js'],
         )
-        line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), all_x_values)
-        line_chart.value_formatter = lambda x: '{} minutes'.format(x)
+        line_chart.y_value_formatter = lambda x: '{} minutes'.format(x)
+        line_chart.x_value_formatter = lambda x: x.strftime('%H:%M')
         for year, year_data in full_values.items():
-            line_chart.add(year, [d['duration'] for d in year_data])
+            line_chart.add(year, [(x, d['duration']) for x, d in zip(all_x_values, year_data)])
         charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts}
 
