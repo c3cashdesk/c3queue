@@ -22,7 +22,7 @@ def structure_data(data):
     for entry in data:
         entry['duration'] = round((entry['pong'] - entry['ping']).seconds / 60, 1)
         ping = entry['ping']
-        result[ping.year][ping.day].append(entry)
+        result[ping.day][ping.year].append(entry)
     return result
 
 
@@ -31,13 +31,13 @@ async def stats(request):
     data = await parse_data()
     data = structure_data(data)
     charts = []
-    for year in list(data.keys())[::-1]:
-        for number, day in data[year].items():  # TODO: combine day 1 of all years, etc
-            first_ping = day[0]['ping']
-            line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}, {}'.format(number - 26, year), height=300)
-            line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in day])
+    for number, year_values in data.items():
+        for year, year_data in year_values.items():  # TODO: combine day 1 of all years, etc
+            first_ping = year_data[0]['ping']
+            line_chart = pygal.Line(x_label_rotation=40, interpolate='cubic', show_legend=False, title='Day {}, {}'.format(number - 26, year), height=300, style=CONGRESS_STYLE)
+            line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), [d['ping'] for d in year_data])
             line_chart.value_formatter = lambda x:  '{} minutes'.format(x)
-            line_chart.add('Waiting time', [d['duration'] for d in day])
+            line_chart.add('Waiting time', [d['duration'] for d in year_data])
             charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts}
 
