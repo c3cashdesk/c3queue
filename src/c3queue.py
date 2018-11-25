@@ -61,26 +61,6 @@ async def stats(request):
     data = structure_data(data)
     charts = []
     for day_number, values in data.items():
-        full_values = {year: [] for year in values}
-        value_keys = list(values.keys())
-        while True:
-            if not value_keys:
-                break
-            next_entry = min(
-                value_keys, key=lambda x: values[x][0]['ping'] if values[x] else LATEST
-            )
-            next_ping = values[next_entry][0]['ping']
-            for year in value_keys:
-                pings = values[year]
-                if not pings:
-                    continue
-                if pings[0]['ping'] == next_ping:
-                    full_values[year].append(pings.pop(0))
-                else:
-                    full_values[year].append({'ping': next_ping, 'duration': None})
-                if not pings:
-                    value_keys.remove(year)
-
         line_chart = pygal.TimeLine(
             x_label_rotation=40,
             interpolate='cubic',
@@ -91,7 +71,7 @@ async def stats(request):
         )
         line_chart.y_value_formatter = lambda x: '{} minutes'.format(x)
         line_chart.x_value_formatter = lambda x: x.strftime('%H:%M')
-        for year, year_data in full_values.items():
+        for year, year_data in values.items():
             line_chart.add(year, [(d['ping'], d['duration']) for d in year_data])
         charts.append(line_chart.render(is_unicode=True))
     return {'charts': charts}
