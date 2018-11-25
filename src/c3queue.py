@@ -90,7 +90,7 @@ async def get_data_path():
             d.write('ping,pong\n')
 
 
-async def main(argv):
+async def main(argv=None):
     app = web.Application()
     app.add_routes([web.get('/', stats)])
     app.add_routes([web.post('/pong', pong)])
