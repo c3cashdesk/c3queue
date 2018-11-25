@@ -80,6 +80,7 @@ async def stats(request):
             title='Day {}'.format(day_number - 26),
             height=300,
             style=CONGRESS_STYLE,
+            js=['/static/pygal-tooltips.min.js'],
         )
         line_chart.x_labels = map(lambda d: d.strftime('%H:%M'), all_x_values)
         line_chart.value_formatter = lambda x: '{} minutes'.format(x)
