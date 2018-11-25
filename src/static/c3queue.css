@@ -34,7 +34,14 @@ main #explanation .inner {
     position:relative;
     display:inline-block; /*required*/
 }
-#c3q svg .graph, #c3q svg .title, #c3q svg .guides, #c3q svg  .vertical .axis.always_show .guide.line, #c3q svg .plot > .background {
+#c3q svg .graph,
+#c3q svg .title,
+#c3q svg .guides,
+#c3q svg .axis .guides text,
+#c3q svg .axis .guides:hover text,
+#c3q svg .axis.y .guides:hover .guide.line,
+#c3q svg .vertical .axis.always_show .guide.line,
+#c3q svg .plot > .background {
     fill: white;
     stroke: #4a5354;
 }
