@@ -84,7 +84,7 @@ async def write_line(ping, pong):
 
 async def get_data_path():
     global DATA_PATH
-    DATA_PATH = os.environ.get('C3QUEUE_DATA', './c3queue.csv')
+    DATA_PATH = os.environ.get('C3QUEUE_DATA', os.path.join(os.path.dirname(__file__), 'c3queue.csv'))
     if not os.path.exists(DATA_PATH):
         with aiofiles.open(DATA_PATH, 'w') as d:
             d.write('ping,pong\n')
