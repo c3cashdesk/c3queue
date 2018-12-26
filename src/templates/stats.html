@@ -17,7 +17,9 @@
     <main>
         <div id="explanation">
             <div class="inner">
-                Last known waiting time: {{ last_ping.duration }} minutes on Day {{ last_ping.day - 26 }}, {{ last_ping.pong.hour }}:{{ last_ping.pong.minute }} ({{ last_ping.year - 1983 }}C3).
+                Last known waiting time: {{ last_ping.duration }} minutes on Day
+                {{ last_ping.day - 26 }}, {{ last_ping.pong.hour }}:{% if
+                last_ping.pong.minute is le 9%}0{% endif %}{{ last_ping.pong.minute }} ({{ last_ping.year - 1983 }}C3).
             </div>
         </div>
         <div id="c3q">
