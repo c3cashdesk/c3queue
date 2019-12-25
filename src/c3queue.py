@@ -20,8 +20,8 @@ CONGRESS_STYLE = pygal.style.DarkStyle
 CONGRESS_STYLE.colors = [
     '#01a89e',  # 33C3
     '#a10632',  # 34C3
-    '#0084B0',
     '#00A357',  # 35C3
+    '#fe5000',  # 36C3
 ]
 
 
