@@ -8,7 +8,7 @@ the ticket queue at Chaos Communication Congress.
 ``c3queue`` integrates with postix_. If you want to use it with your postix
 installation, you'll have to empty the ``c3queue.csv`` file, and choose a
 secret passphrase. Enter the passphrase in your postix configuration, and also
-set it as environment variable ``C3SECRET`` when starting the c3queue server.
+set it as environment variable ``C3QUEUE_SECRET`` when starting the c3queue server.
 
 Other than that, install the requirements with ``pip install -r
 requirements.txt`` (you'll need Python 3.5+), and run your server with any of
