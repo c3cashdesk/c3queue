@@ -24,6 +24,14 @@ CONGRESS_STYLE.colors = [
     '#fe5000',  # 36C3
 ]
 
+CURRENT_EVENT = '37C3'
+
+
+def get_event(year):
+    if year < 2020:
+        return f"{year - 1983}C3"
+    return f"{year - 1986}C3"
+
 
 def truncate_time(t):
     return t.replace(second=0, microsecond=0)
@@ -49,13 +57,14 @@ def structure_data(data):
         entry['ping'] = datetime.time(
             hour=entry['ping'].hour, minute=(entry['ping'].minute // 5) * 5
         )
-        key = '{}C3'.format(ping.year - 1983)
+        key = get_event(ping.year)
         if result[ping.day][key] and result[ping.day][key][-1]['ping'] == entry['ping']:
             result[ping.day][key][-1] = merge_pings(result[ping.day][key][-1], entry)
         else:
             result[ping.day][key].append(entry)
     entry['year'] = ping.year
     entry['day'] = ping.day
+    entry['event'] = key
     return result, entry
 
 
@@ -79,7 +88,7 @@ async def stats(request):
         for year in sorted(list(values)):
             line_chart.add(year, [(d['ping'], d['duration']) for d in values[year]])
         charts.append(line_chart.render(is_unicode=True))
-    return {'charts': charts, 'last_ping': last_ping}
+    return {'charts': charts, 'last_ping': last_ping, 'event': CURRENT_EVENT}
 
 
 async def pong(request):
