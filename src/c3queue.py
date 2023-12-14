@@ -1,6 +1,4 @@
-import csv
 import datetime
-import operator
 import os
 from collections import defaultdict
 
@@ -93,19 +91,19 @@ async def stats(request):
 
 async def pong(request):
     if (
-        not "Authorization" in request.headers
+        "Authorization" not in request.headers
         or request.headers["Authorization"] != C3SECRET
     ):
         return aiohttp_jinja2.render_template("405.html", request, {})
     try:
         data = await request.post()
-    except:
+    except Exception:
         return aiohttp_jinja2.render_template("405.html", request, {})
     if "ping" in data and "pong" in data:
         try:
             ping = parser.parse(data["ping"])
             pong = parser.parse(data["pong"])
-        except:
+        except Exception:
             return aiohttp_jinja2.render_template("405.html", request, {})
         else:
             await write_line(ping, pong)
