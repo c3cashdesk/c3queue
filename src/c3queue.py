@@ -22,6 +22,7 @@ CONGRESS_STYLE.colors = [
     '#a10632',  # 34C3
     '#00A357',  # 35C3
     '#fe5000',  # 36C3
+    '#ffffff',  # 37C3
 ]
 
 CURRENT_EVENT = '37C3'
