@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="60">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#">
-    <meta name="robots" content="index,follow">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="stylesheet" href="/static/c3queue.css" type="text/css" />
-    <title>Waiting to check in at {{ event }}</title>
-</head>
-<body>
-    <header>
-        <img src="/static/img/titel0.svg">
-    </header>
-    <main>
-        {% if last_ping.event == event %}
-        <div id="explanation">
-            <div class="inner">
-                Last known waiting time: {{ last_ping.duration }} minutes on Day
-                {{ last_ping.day - 26 }}, {% if last_ping.pong.hour is le
-                9%}0{% endif %}{{ last_ping.pong.hour }}:{% if
-                last_ping.pong.minute is le 9%}0{% endif %}{{ last_ping.pong.minute }} ({{ last_ping.event }}).
-            </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="refresh" content="60">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#">
+        <meta name="robots" content="index,follow">
+        <meta name="referrer" content="no-referrer-when-downgrade">
+        <link rel="stylesheet" href="/static/c3queue.css" type="text/css" />
+        <title>Waiting to check in at {{ event }}</title>
+    </head>
+    <body>
+        <header>
+            <img src="/static/img/titel0.svg">
+        </header>
+        <main>
+            {% if last_ping.event == event %}
+                <div id="explanation">
+                    <div class="inner">
+                        Last known waiting time: {{ last_ping.duration }} minutes on Day
+                        {{ last_ping.day - 26 }}, {% if last_ping.pong.hour is le
+                        9%}0{% endif %}{{ last_ping.pong.hour }}:{% if
+            last_ping.pong.minute is le 9%}0{% endif %}{{ last_ping.pong.minute }} ({{ last_ping.event }}).
         </div>
-        {% endif %}
-        <div id="c3q">
-            {% for chart in charts %}
-                {{ chart|safe }}
-            {% endfor %}
+    </div>
+    {% endif %}
+    <div id="c3q">
+        {% for chart in charts %}
+            {{ chart|safe }}
+        {% endfor %}
+    </div>
+    <div id="explanation">
+        <div class="inner">
+            You can download the <a href="/data">raw data</a> here.
         </div>
-        <div id="explanation">
-            <div class="inner">
-                You can download the <a href="/data">raw data</a> here.
-            </div>
-        </div>
-    </main>
+    </div>
+</main>
 </body>
 </html>

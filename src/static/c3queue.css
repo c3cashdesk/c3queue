@@ -1,40 +1,44 @@
 body {
-    background: black;
-    color: white;
+  background: black;
+  color: white;
 }
 a {
-    border: 2px solid #00bb31;
-    color: #00bb31;
-    text-decoration: none;
+  border: 2px solid #00bb31;
+  color: #00bb31;
+  text-decoration: none;
 }
 header {
-	text-align: center;
+  text-align: center;
 }
 header img {
-    max-width: 100%;
-	max-height: 200px;
+  max-width: 100%;
+  max-height: 200px;
 }
 
 main #explanation {
-    font-family: Open Sans, sans-serif;
-    font-weight: bold;
-    font-size: 20px;
-    text-transform: uppercase;
-    text-align: center;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 700px;
-    padding: 16px;
+  font-family:
+    Open Sans,
+    sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+  padding: 16px;
 }
 main #explanation .inner {
-	color: #d0d0ce;
-    position:relative;
-    display:inline-block; /*required*/
+  color: #d0d0ce;
+  position: relative;
+  display: inline-block; /*required*/
 }
 #c3q svg .tooltip text.x_label {
-    font-size: .8em;
+  font-size: 0.8em;
 }
-#c3q svg .tooltip text.legend, #c3q svg .tooltip text.x_label, #c3q svg .tooltip text.value {
-    font-size: 10px !important;
+#c3q svg .tooltip text.legend,
+#c3q svg .tooltip text.x_label,
+#c3q svg .tooltip text.value {
+  font-size: 10px !important;
 }
