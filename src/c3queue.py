@@ -63,15 +63,18 @@ def structure_data(data):
     entry["year"] = ping.year
     entry["day"] = ping.day
     entry["event"] = key
-    return result, entry
+    return {
+        "data": result,
+        "last_ping": entry,
+    }
 
 
 @aiohttp_jinja2.template("stats.html")
 async def stats(request):
     data = await parse_data()
-    data, last_ping = structure_data(data)
+    data = structure_data(data)
     charts = []
-    for day_number in sorted(list(data)):
+    for day_number in sorted(list(data["data"])):
         line_chart = pygal.TimeLine(
             x_label_rotation=40,
             interpolate="cubic",
@@ -82,7 +85,7 @@ async def stats(request):
         )
         line_chart.value_formatter = lambda x: "{} minutes".format(x)
         line_chart.x_value_formatter = lambda x: x.strftime("%H:%M")
-        values = data[day_number]
+        values = data["data"][day_number]
         for year in sorted(list(values)):
             line_chart.add(year, [(d["ping"], d["duration"]) for d in values[year]])
         charts.append(line_chart.render(is_unicode=True))
@@ -91,7 +94,7 @@ async def stats(request):
     # yeah, I don't know either
     chart = pygal.Line(height=0, js=["/static/pygal-tooltips.min.js"], title="IGNORE")
     charts.append(chart.render(is_unicode=True))
-    return {"charts": charts, "last_ping": last_ping, "event": CURRENT_EVENT}
+    return {"charts": charts, "last_ping": data["last_ping"], "event": CURRENT_EVENT}
 
 
 async def pong(request):
