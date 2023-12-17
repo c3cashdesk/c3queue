@@ -12,23 +12,27 @@ from dateutil import parser
 DATA_PATH = ""
 C3SECRET = os.environ.get("C3QUEUE_SECRET")
 LATEST = datetime.time(23, 59, 59)
-
-CONGRESS_STYLE = pygal.style.DarkStyle
-CONGRESS_STYLE.colors = [
-    "#01a89e",  # 33C3
-    "#a10632",  # 34C3
-    "#00A357",  # 35C3
-    "#fe5000",  # 36C3
-    "#ffffff",  # 37C3
-]
-
-CURRENT_EVENT = "37C3"
+EVENTS = {
+    "33C3": "#01a89e",
+    "34C3": "#a10632",
+    "35C3": "#00A357",
+    "36C3": "#fe5000",
+    "37C3": "#ffffff",
+}
 
 
 def get_event(year):
+    if isinstance(year, str):
+        year = int(year)
     if year < 2020:
         return f"{year - 1983}C3"
     return f"{year - 1986}C3"
+
+
+def get_style(filtered_events):
+    style = pygal.style.DarkStyle
+    style.colors = [EVENTS[e] for e in filtered_events]
+    return style
 
 
 def truncate_time(t):
@@ -47,15 +51,19 @@ def merge_pings(ping1, ping2):
     return ping1
 
 
-def structure_data(data):
+def structure_data(data, filtered_events=None):
     result = defaultdict(lambda: defaultdict(list))
+    years = set()
     for entry in data:
         ping = entry["ping"].date()
+        key = get_event(ping.year)
+        if filtered_events and key not in filtered_events:
+            continue
         entry["duration"] = round((entry["pong"] - entry["ping"]).seconds / 60, 1)
         entry["ping"] = datetime.time(
             hour=entry["ping"].hour, minute=(entry["ping"].minute // 5) * 5
         )
-        key = get_event(ping.year)
+        years.add(key)
         if result[ping.day][key] and result[ping.day][key][-1]["ping"] == entry["ping"]:
             result[ping.day][key][-1] = merge_pings(result[ping.day][key][-1], entry)
         else:
@@ -71,16 +79,21 @@ def structure_data(data):
 
 @aiohttp_jinja2.template("stats.html")
 async def stats(request):
+    try:
+        filtered_events = request.query.getall("events")
+    except KeyError:
+        filtered_events = list(EVENTS.keys())
     data = await parse_data()
-    data = structure_data(data)
+    data = structure_data(data, filtered_events=filtered_events)
     charts = []
     for day_number in sorted(list(data["data"])):
         line_chart = pygal.TimeLine(
             x_label_rotation=40,
+            # it's not grat, but it's the best interpolation we have
             interpolate="cubic",
             title="Day {}".format(day_number - 26),
             height=300,
-            style=CONGRESS_STYLE,
+            style=get_style(filtered_events),
             js=["/static/pygal-tooltips.min.js"],
         )
         line_chart.value_formatter = lambda x: "{} minutes".format(x)
@@ -94,7 +107,13 @@ async def stats(request):
     # yeah, I don't know either
     chart = pygal.Line(height=0, js=["/static/pygal-tooltips.min.js"], title="IGNORE")
     charts.append(chart.render(is_unicode=True))
-    return {"charts": charts, "last_ping": data["last_ping"], "event": CURRENT_EVENT}
+    return {
+        "charts": charts,
+        "last_ping": data["last_ping"],
+        "event": list(EVENTS.keys())[-1],
+        "events": EVENTS,
+        "filtered_events": filtered_events,
+    }
 
 
 async def pong(request):

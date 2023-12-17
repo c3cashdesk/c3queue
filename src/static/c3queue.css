@@ -15,6 +15,47 @@ header img {
   max-height: 200px;
   width: 800px;
 }
+form#event-filter {
+  text-align: center;
+  margin-bottom: 16px;
+  margin-top: 24px;
+  font-family: monospace;
+  font-size: 20px;
+}
+
+form#event-filter input[type="checkbox"] {
+  display: none;
+}
+form#event-filter input[type="checkbox"] + label {
+  display: inline-block;
+  padding: 4px 8px;
+  cursor: pointer;
+  position: relative;
+}
+form#event-filter input[type="checkbox"] + label:before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 3px solid var(--color);
+  background: black;
+  vertical-align: middle;
+}
+form#event-filter input[type="checkbox"]:checked + label:after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 12px;
+  margin-left: 4px;
+  border: solid #00bb31;
+  border-width: 0 4px 4px 0;
+  transform: rotate(45deg);
+  vertical-align: middle;
+  position: absolute;
+  left: 11px;
+  top: 8px;
+}
 
 main #explanation {
   font-family:

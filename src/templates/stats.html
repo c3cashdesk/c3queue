@@ -24,6 +24,12 @@
         </div>
     </div>
     {% endif %}
+    <form id="event-filter">
+        {% for event, color in events.items() %}
+            <input type="checkbox" name="events" id="event-{{ event }}" value="{{ event }}" {% if event in filtered_events %}checked{% endif %} />
+            <label for="event-{{ event }}" style="--color: {{ color }}">{{ event }}</label>
+        {% endfor %}
+    </form>
     <div id="c3q">
         {% for chart in charts %}
             {% if loop.last %}<div class="hidden">{% endif %}
@@ -37,5 +43,6 @@
         </div>
     </div>
 </main>
+<script src="/static/c3queue.js"></script>
 </body>
 </html>
