@@ -26,7 +26,9 @@
     {% endif %}
     <div id="c3q">
         {% for chart in charts %}
+            {% if loop.last %}<div class="hidden">{% endif %}
             {{ chart|safe }}
+            {% if loop.last %}</div>{% endif %}
         {% endfor %}
     </div>
     <div id="explanation">

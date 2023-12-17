@@ -43,3 +43,6 @@ main #explanation .inner {
 #c3q svg .tooltip text.value {
   font-size: 10px !important;
 }
+.hidden {
+  display: none;
+}

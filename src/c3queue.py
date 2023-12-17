@@ -86,6 +86,11 @@ async def stats(request):
         for year in sorted(list(values)):
             line_chart.add(year, [(d["ping"], d["duration"]) for d in values[year]])
         charts.append(line_chart.render(is_unicode=True))
+
+    # Hiding individual lines only works when there is a Line chart present on the page
+    # yeah, I don't know either
+    chart = pygal.Line(height=0, js=["/static/pygal-tooltips.min.js"], title="IGNORE")
+    charts.append(chart.render(is_unicode=True))
     return {"charts": charts, "last_ping": last_ping, "event": CURRENT_EVENT}
 
 
