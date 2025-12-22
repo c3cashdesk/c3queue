@@ -18,5 +18,6 @@ run:
 
 # Run the production server with gunicorn
 [group('production')]
+[working-directory("src")]
 server:
-    uv run --extra prod gunicorn --bind 0.0.0.0:8001 --worker-class aiohttp.GunicornWebWorker src.c3queue:main
+    uv run gunicorn --bind unix:/run/gunicorn/c3queue --worker-class aiohttp.GunicornWebWorker c3queue:main
