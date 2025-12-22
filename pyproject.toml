@@ -1,0 +1,12 @@
+[project]
+name = "c3queue"
+version = "0.1.0"
+description = "C3 queue statistics tracker"
+dependencies = [
+    "aiofiles",
+    "aiohttp",
+    "aiohttp-jinja2",
+    "python-dateutil",
+    "pygal",
+    "gunicorn",
+]

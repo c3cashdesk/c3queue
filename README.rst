@@ -10,11 +10,16 @@ installation, you'll have to empty the ``c3queue.csv`` file, and choose a
 secret passphrase. Enter the passphrase in your postix configuration, and also
 set it as environment variable ``C3QUEUE_SECRET`` when starting the c3queue server.
 
-Other than that, install the requirements with ``pip install -r
-requirements.txt`` (you'll need Python 3.5+), and run your server with any of
-the methods in the aiohttp docs_, for example with gunicorn::
+Other than that, install the requirements and run the server using just_
+(you'll need Python 3.9+)::
 
-   gunicorn --bind unix:/run/gunicorn/c3queue --worker-class aiohttp.GunicornWebWorker c3queue:main
+   just install --extra prod  # Install dependencies
+   just run                   # Run development server at :8001
+   just server                # Run production server with gunicorn
+
+Or run manually with any of the methods in the aiohttp docs_, for example with gunicorn::
+
+   uv run gunicorn --bind unix:/run/gunicorn/c3queue --worker-class aiohttp.GunicornWebWorker src.c3queue:main
 
 ``c3queue`` expects to receive POST requests on the ``/pong`` endpoint in the
 format::
@@ -29,4 +34,5 @@ library can parse by default will be understood.
 
 
 .. _postix: https://github.com/c3cashdesk/postix
+.. _just: https://github.com/casey/just
 .. _docs: https://aiohttp.readthedocs.io/en/stable/deployment.html

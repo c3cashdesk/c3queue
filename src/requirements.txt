@@ -1,6 +1,0 @@
-aiofiles
-aiohttp
-aiohttp_jinja2
-python-dateutil
-pygal
-gunicorn
