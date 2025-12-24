@@ -84,7 +84,7 @@ async def stats(request):
     try:
         filtered_events = request.query.getall("events")
     except KeyError:
-        filtered_events = list(EVENTS.keys())
+        filtered_events = list(EVENTS.keys())[-2:]
     data = await parse_data()
     data = structure_data(data, filtered_events=filtered_events)
     charts = []
