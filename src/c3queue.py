@@ -8,10 +8,12 @@ import jinja2
 import pygal
 from aiohttp import web
 from dateutil import parser
+from zoneinfo import ZoneInfo
 
 DATA_PATH = ""
 C3SECRET = os.environ.get("C3QUEUE_SECRET")
 LATEST = datetime.time(23, 59, 59)
+tz = ZoneInfo("Europe/Berlin")
 EVENTS = {
     "33C3": "#01a89e",
     "34C3": "#a10632",
@@ -148,6 +150,12 @@ async def data(request):
     return web.Response(text=data)
 
 
+def ensure_tz(dt):
+    if not dt.tzinfo:
+        dt = dt.replace(tzinfo=datetime.UTC)
+    return dt.astimezone(tz)
+
+
 async def parse_data():
     result = []
     if not DATA_PATH:
@@ -157,8 +165,8 @@ async def parse_data():
             if row.strip() == "ping,pong":
                 continue
             ping, pong = row.split(",")
-            ping = parser.parse(ping.strip('"'))
-            pong = parser.parse(pong.strip('"'))
+            ping = ensure_tz(parser.parse(ping.strip('"')))
+            pong = ensure_tz(parser.parse(pong.strip('"')))
             result.append({"ping": ping, "pong": pong})
     return result
 
