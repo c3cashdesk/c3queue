@@ -71,10 +71,12 @@ def structure_data(data, filtered_events=None):
         if filtered_events and key not in filtered_events:
             continue
         entry["duration"] = round((entry["pong"] - entry["ping"]).seconds / 60, 1)
-        # Round to 5-minute intervals but keep full datetime for correct chronological ordering
-        entry["ping"] = entry["ping"].replace(
-            minute=(entry["ping"].minute // 5) * 5, second=0, microsecond=0
-        )
+        # Normalize to reference date so different years align on the same x-axis
+        # Times before 4am go on "day 2" so they sort after late-night times
+        hour = entry["ping"].hour
+        minute = (entry["ping"].minute // 5) * 5
+        day = 2 if hour < 4 else 1
+        entry["ping"] = datetime.datetime(2000, 1, day, hour, minute)
         years.add(key)
         if result[ping.day][key] and result[ping.day][key][-1]["ping"] == entry["ping"]:
             result[ping.day][key][-1] = merge_pings(result[ping.day][key][-1], entry)
@@ -99,7 +101,7 @@ async def stats(request):
     data = structure_data(data, filtered_events=filtered_events)
     charts = []
     for day_number in sorted(list(data["data"])):
-        line_chart = pygal.TimeLine(
+        line_chart = pygal.DateTimeLine(
             x_label_rotation=40,
             # it's not grat, but it's the best interpolation we have
             interpolate="cubic",
