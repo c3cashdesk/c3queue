@@ -71,8 +71,9 @@ def structure_data(data, filtered_events=None):
         if filtered_events and key not in filtered_events:
             continue
         entry["duration"] = round((entry["pong"] - entry["ping"]).seconds / 60, 1)
-        entry["ping"] = datetime.time(
-            hour=entry["ping"].hour, minute=(entry["ping"].minute // 5) * 5
+        # Round to 5-minute intervals but keep full datetime for correct chronological ordering
+        entry["ping"] = entry["ping"].replace(
+            minute=(entry["ping"].minute // 5) * 5, second=0, microsecond=0
         )
         years.add(key)
         if result[ping.day][key] and result[ping.day][key][-1]["ping"] == entry["ping"]:
