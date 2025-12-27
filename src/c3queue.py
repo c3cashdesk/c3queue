@@ -43,6 +43,13 @@ def truncate_time(t):
     return t.replace(second=0, microsecond=0)
 
 
+def get_effective_date(dt):
+    """Get the effective date, treating times before 4am as belonging to the previous day."""
+    if dt.hour < 4:
+        return (dt - datetime.timedelta(days=1)).date()
+    return dt.date()
+
+
 def merge_pings(ping1, ping2):
     ping1["pong"] = None
     previous_merges = ping1.get("contains", 1)
@@ -59,7 +66,7 @@ def structure_data(data, filtered_events=None):
     result = defaultdict(lambda: defaultdict(list))
     years = set()
     for entry in data:
-        ping = entry["ping"].date()
+        ping = get_effective_date(entry["ping"])
         key = get_event(ping.year)
         if filtered_events and key not in filtered_events:
             continue
